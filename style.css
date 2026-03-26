@@ -1,0 +1,307 @@
+/* ===== base style ===== */
+body {
+  font-family: -apple-system, BlinkMacSystemFont;
+  background: #E9E9ED;
+  display: flex;
+  justify-content: center;
+  padding-top: 80px;
+}
+
+/* ===== applicatoons ===== */
+.app {
+  width: 320px;
+  background: #F7F7FA;
+  padding: 20px;
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+
+  transition: all 0.45s cubic-bezier(0.22,1,0.36,1);
+}
+
+.app.active {
+  width: 360px;
+}
+
+.app.wide {
+  width: 680px; 
+}
+
+.app.wide #taskList {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ===== intro ===== */
+#intro {
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ===== title===== */
+h1 {
+  font-size: 28px;
+  margin-bottom: 18px;
+}
+
+/* ===== inputz ===== */
+.input-area {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid #D1D1D6;
+  font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #007AFF;
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.15);
+}
+
+/* ===== buttonzs ===== */
+button {
+  background: #007AFF;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* ===== list sectioin ===== */
+#taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* grid  */
+.app.wide #taskList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 16px;
+  row-gap: 18px;
+}
+
+.app.wide #taskList li {
+  align-self: start;
+}
+
+/* ===== task ===== */
+li {
+  list-style: none;
+
+  /* ✅ allow expansion */
+  min-height: 72px;
+  height: auto;
+
+  perspective: 1000px;
+
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.card {
+  width: 100%;
+}
+
+li.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.45s cubic-bezier(0.22,1,0.36,1);
+}
+
+li.removing {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: all 0.3s ease;
+}
+
+/* ===== Ccard ===== */
+.card {
+  width: 100%;
+  position: relative;
+
+  height: auto;        
+  min-height: 52px;    
+
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+
+
+/* coin flip xy axis */
+li.flip .card {
+  transform: rotateY(180deg);
+}
+
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.03);
+  transform: translateZ(-1px);
+}
+
+.card {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+.face {
+  backface-visibility: hidden;
+}
+
+/* front */
+.front {
+  transform: rotateY(0deg);
+}
+
+/* back */
+.back {
+  transform: rotateY(180deg);
+}
+
+/* ===== face ===== */
+.face {
+  position: absolute;
+  inset: 0;
+
+  border-radius: 16px;
+
+  padding: 10px 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  backface-visibility: hidden;
+}
+
+.front {
+  background: #F2F2F7;
+
+  padding: 14px 16px;
+
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.03),
+    0 8px 20px rgba(0,0,0,0.04);
+}
+
+.back {
+  background: linear-gradient(135deg, #FFD60A, #FFCC00);
+  transform: rotateY(180deg);
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* ===== hover cursos ===== */
+li:hover .front {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.08);
+}
+
+/* ===== Ccontent ===== */
+.task-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  flex: 1;
+  min-width: 0; 
+}
+
+.task-text {
+  font-size: 14px;
+  line-height: 1.35;
+
+  white-space: normal;
+  word-break: break-word;
+
+  max-width: 100%;
+
+  display: block;
+}
+
+.task-text.flagged {
+  color: #FF9500;
+  font-weight: 500;
+}
+
+/* ===== actiions ===== */
+.task-actions {
+  display: flex;
+  gap: 8px;
+
+  flex-shrink: 0; 
+
+  align-items: center;
+
+  opacity: 0;
+  transform: translateX(16px);
+  transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+}
+
+.task-actions.completed .flag-btn {
+  display: none;
+}
+
+.task-left input {
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+}
+
+li:hover .task-actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+li:hover .task-left input {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.delete-btn {
+  background: #FF3B30;
+}
+
+.flag-btn {
+  background: transparent;
+  color: #FF9500;
+}
+
+/* ===== completed titles ===== */
+.section-title {
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: 0.5;
+}
+
+/* ===== completed task (apple-like) ===== */
+.task-text.completed {
+  color: #8E8E93; /* iOS gray */
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: #8E8E93;
+
+  opacity: 0.85;
+}
