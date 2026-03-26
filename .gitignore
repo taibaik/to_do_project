@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Python
+venv/
+__pycache__/
+
+# WebUI binaries
+webui-macos-clang-arm64/
+*.dylib
+*.a
