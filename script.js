@@ -1,64 +1,85 @@
-/* =========================
-   ENTER KEY SUPPORT
-========================= */
-document.addEventListener("DOMContentLoaded", () => {
+/* w8 for backend */
+function waitForPywebview() {
+  return new Promise(resolve => {
+    if (window.pywebview) return resolve();
+
+    const interval = setInterval(() => {
+      if (window.pywebview) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 50);
+  });
+}
+
+
+/* init */
+document.addEventListener("DOMContentLoaded", async () => {
   const input = document.getElementById("taskInput");
 
-  if (input) {
-    input.addEventListener("keypress", e => {
-      if (e.key === "Enter") addTask();
-    });
-  }
+  input.addEventListener("keypress", e => {
+    if (e.key === "Enter") addTask();
+  });
+
+  await waitForPywebview();
+
+  const data = await window.pywebview.api.init_ui();
+  renderTasks(data);
 });
 
 
-/* =========================
-   FRONTEND → BACKEND CALLS
-========================= */
+/* add */
+async function addTask() {
+  await waitForPywebview();
 
-function addTask() {
   const input = document.getElementById("taskInput");
   const text = input.value.trim();
   if (!text) return;
 
-  window.webui.call("add_task", text);
+  const data = await window.pywebview.api.add_task(text);
   input.value = "";
+  renderTasks(data);
 }
 
-function toggleTask(id) {
+
+/* toggle done */
+async function toggleTask(id) {
   const item = document.querySelector(`[data-id="${id}"]`);
   if (item) item.classList.add("flip");
 
-  window.webui.call("toggle_task", id);
+  setTimeout(async () => {
+    const data = await window.pywebview.api.toggle_task(id);
+    renderTasks(data);
+  }, 600);
 }
 
-function deleteTask(id) {
+
+/* delete */
+async function deleteTask(id) {
   const item = document.querySelector(`[data-id="${id}"]`);
   if (item) item.classList.add("removing");
 
-  setTimeout(() => {
-    window.webui.call("delete_task", id);
+  setTimeout(async () => {
+    const data = await window.pywebview.api.delete_task(id);
+    renderTasks(data);
   }, 250);
 }
 
-function toggleFlag(id) {
-  window.webui.call("toggle_flag", id);
+
+/* flag */
+async function toggleFlag(id) {
+  const data = await window.pywebview.api.toggle_flag(id);
+  renderTasks(data);
 }
 
 
-/* =========================
-   RENDER FROM BACKEND
-========================= */
-
-function renderFromBackend(data) {
-  const tasks = JSON.parse(data);
-
+/* render*/
+function renderTasks(tasks) {
   const list = document.getElementById("taskList");
   const app = document.getElementById("appContainer");
 
   list.innerHTML = "";
 
-  // sort flagged first
   tasks.sort((a, b) => b.flagged - a.flagged);
 
   if (tasks.length > 6) app.classList.add("wide");
@@ -67,10 +88,8 @@ function renderFromBackend(data) {
   const active = tasks.filter(t => !t.done);
   const done = tasks.filter(t => t.done);
 
-  // active tasks
   active.forEach(t => list.appendChild(createTask(t)));
 
-  // completed section
   if (done.length) {
     const title = document.createElement("div");
     title.className = "section-title";
@@ -82,10 +101,7 @@ function renderFromBackend(data) {
 }
 
 
-/* =========================
-   UI CREATION (KEEP THIS)
-========================= */
-
+/* ui */
 function createTask(task) {
   const li = document.createElement("li");
   li.setAttribute("data-id", task.id);
@@ -96,11 +112,11 @@ function createTask(task) {
       <div class="face front">
         
         <div class="task-left">
-          <input 
-            type="checkbox" 
-            ${task.done ? "checked" : ""} 
-            onclick="toggleTask(${task.id})"
-          >
+          ${
+            !task.done
+              ? `<input type="checkbox" onclick="toggleTask(${task.id})">`
+              : ""
+          }
 
           <span class="task-text ${task.flagged ? 'flagged' : ''} ${task.done ? 'completed' : ''}">
             ${task.text}
@@ -108,11 +124,15 @@ function createTask(task) {
         </div>
 
         <div class="task-actions ${task.done ? "completed" : ""}">
-          ${!task.done ? `
+          ${
+            !task.done
+              ? `
             <button class="flag-btn" onclick="toggleFlag(${task.id})">
               ${task.flagged ? "⭐" : "☆"}
             </button>
-          ` : ""}
+          `
+              : ""
+          }
           <button class="delete-btn" onclick="deleteTask(${task.id})">X</button>
         </div>
 
@@ -130,10 +150,7 @@ function createTask(task) {
 }
 
 
-/* =========================
-   INTRO ANIMATION (KEEP)
-========================= */
-
+/* intro */
 function enterApp() {
   const intro = document.getElementById("introView");
   const main = document.getElementById("mainView");

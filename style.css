@@ -219,7 +219,7 @@ li:hover .front {
   box-shadow: 0 14px 30px rgba(0,0,0,0.08);
 }
 
-/* ===== Ccontent ===== */
+/*  Ccontent */
 .task-left {
   display: flex;
   align-items: flex-start;
@@ -246,7 +246,7 @@ li:hover .front {
   font-weight: 500;
 }
 
-/* ===== actiions ===== */
+/* actiions  */
 .task-actions {
   display: flex;
   gap: 8px;
@@ -289,14 +289,14 @@ li:hover .task-left input {
   color: #FF9500;
 }
 
-/* ===== completed titles ===== */
+/*  completed titles  */
 .section-title {
   margin-top: 6px;
   font-size: 13px;
   opacity: 0.5;
 }
 
-/* ===== completed task (apple-like) ===== */
+/* completed task */
 .task-text.completed {
   color: #8E8E93; /* iOS gray */
   text-decoration: line-through;
